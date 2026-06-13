@@ -1,0 +1,16 @@
+{
+  "name": "Nucleo — La prossima mossa con i tuoi soldi",
+  "short_name": "Nucleo",
+  "description": "App di comando per le tue finanze: dimmi la verità sul denaro, io ti dico la prossima mossa.",
+  "lang": "it",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#101216",
+  "theme_color": "#101216",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
