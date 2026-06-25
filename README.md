@@ -2,6 +2,42 @@
 
 **La prossima mossa con i tuoi soldi.** Tre schermate, un solo gesto: scorri.
 
+## Novità v9 — feeling app nativa, fatto per dita grosse
+
+Tarato su iPhone 13 mini (schermo piccolo), pensato per l'uso quotidiano senza pensieri.
+
+- **Tutto a misura di dito:** ogni voce, tile e pulsante rispetta i target tattili iOS (≥44pt), con testo proporzionato e leggibile anche sullo schermo piccolo.
+- **Feedback nativo alla pressione:** ogni elemento toccabile «affonda» leggermente come in un'app vera; niente lampeggi da pagina web.
+- **Niente sensazione-browser:** nessuna selezione testo accidentale sulla chrome, scroll con inerzia, tab bar e fogli in vetro iOS, status bar pulita una volta aggiunta alla Home.
+- **Tab bar grande e centrabile**, composer e tastierino più ampi, fogli (modifica rapida, nuovo obiettivo) in stile foglio modale iOS con maniglia.
+- Light e dark mode nativi, rispetto di «riduci trasparenza/movimento».
+
+## Novità v8 — una riga, una mossa
+
+Il principio non è «l'app fa tutto al posto tuo» (sarebbe la strada per ripetere gli errori del passato), ma **minimo sforzo da parte tua, massima chiarezza per le tue decisioni**.
+
+- **All'apertura vedi una sola cosa:** una frase che dice come stai e **una** mossa da fare oggi (un tap). Tutto il resto è dietro «Vedi i dettagli».
+- **La mossa è sempre quella che conta davvero**, scelta dallo stato reale: registrare lo stipendio il giorno giusto, pagare la fissa in scadenza, tenere la barra se sei stretto, o mettere una quota in un obiettivo se hai margine.
+- **Tu decidi, l'app prepara.** Niente automatismi sui soldi: la mossa la esegui tu con un tap, e puoi sempre annullare.
+- **Crescita per attrito giusto:** vedere, scegliere, correggere — non delegare.
+
+## Novità v7 — liquidità reale, fisse-promemoria, obiettivi multipli
+
+- **Vedi la liquidità totale, sempre intatta.** «Hai in tutto» mostra ciò che possiedi davvero; «Impegnato» (fisse da pagare + programmate) è mostrato a parte, non nascosto; «Risparmi» è separato.
+- **Le fisse non si auto-sottraggono più.** Sono un promemoria nella lista «da pagare»: contano sul conto **solo quando le paghi** (tocchi «Paga» → diventa un'uscita). Niente più budget che crolla in NERO per affitti già pagati. È la radice del vecchio «non funziona».
+- **Interruttore tuo:** in ⚙︎ → «Come calcolo il budget» decidi se gli impegni riducono il «puoi spendere» o restano solo promemoria.
+- **Budget su tre orizzonti:** al giorno, a settimana, a fine ciclo.
+- **Obiettivi di risparmio multipli** (casa, viaggio, emergenza…): ognuno con saldo, traguardo e barra. Aggiungi con un tap; le entrate si proteggono verso l'obiettivo scelto.
+
+## Novità v6 — tu comandi i numeri, l'IA solo consiglia
+
+Il principio è cambiato dopo l'uso reale: **l'IA non tocca più un solo euro.**
+
+- **Comunichi solo entrate e uscite.** `−15 benzina`, `+1097 stipendio`, `−7,50 bar`. Il `−` è un'uscita, il `+` un'entrata. Tutto qui.
+- **L'IA è in sola lettura.** Risponde alle domande («come sto messo?»), legge gli scontrini e ti *dice cosa scrivere*, ma non registra e non modifica niente. Niente più numeri inventati o doppi conteggi: i calcoli li fa il codice, sempre uguali.
+- **I numeri sono tuoi.** Tocca **Sul conto**, **Risparmi**, **Ticket** direttamente nella schermata Oggi (o il link **Correggi**) e li sistemi a mano in un attimo, con scorciatoie ±10/±50. Quando app e realtà divergono, riallinei in 10 secondi.
+- Accantonamenti e spese programmate restano disponibili ma **facoltativi**, mai imposti.
+
 ## Novità v5 — comunicazione, flussi a un tap, soldi sempre visibili
 
 Nate dall'uso reale (un backup di una giornata storta):
