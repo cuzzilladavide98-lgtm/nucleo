@@ -5,6 +5,18 @@
 
 
 
+
+## Novità v14 — ripristino all'avvio, percentuali, file, consigli di allocazione
+
+**1. Ripristino all'avvio.** La schermata iniziale ora ha «Ho già un backup — ripristina»: dopo una reinstallazione carichi la copia da File/iCloud e riparti dov'eri, senza rifare il setup.
+
+**2. Margine di sicurezza in % (oltre che in €).** Un interruttore €/% accanto al margine, sia nel setup sia in Impostazioni. In percentuale è calcolato sullo stipendio (es. 10% di 1.400 = 140 € sempre tenuti da parte). Si adatta da solo se cambia lo stipendio.
+
+**3. Carica un file dal tastierino.** Sul «＋», oltre a 📷 (scatta foto), c'è 📎 (carica un file): foto dalla galleria o ricevute da File, **immagini e PDF**. Con l'IA attiva legge il totale; senza, lo scrivi tu.
+
+**4. Consiglio di allocazione quando incassi.** Registri un'entrata sopra i 100 € e Nucleo apre un consiglio **calmo e fattuale** (niente «è arrivato lo stipendio!!!»): quanto è da pagare nel ciclo, a quanti mesi sta il cuscinetto, e una quota concreta da mettere da parte *prima* che i soldi si confondano con lo spendibile. Un tap accantona, oppure «Lascio sul conto». È la decisione che conta di più: dove vanno i soldi non ancora spesi — e resta tua.
+
+
 ## Novità v13 — Resilienza dei dati (non perdere mai tutto)
 
 I dati di Nucleo vivono sul telefono. Se Safari pulisce i dati del sito, sparirebbero. Tre difese:

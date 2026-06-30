@@ -331,6 +331,13 @@ label{display:block;font-size:13px;color:var(--label2);margin:14px 0 6px;}
 .recnudge .rn-t1{display:block;font-size:15px;font-weight:600;}
 .recnudge .rn-t2{display:block;font-size:13px;color:var(--label2);margin-top:1px;}
 .recnudge .rn-go{flex:none;color:var(--tint);font-weight:600;font-size:15px;}
+/* campo valore con interruttore €/% */
+.pctfield{display:flex;gap:8px;align-items:stretch;}
+.pctfield input{flex:1;}
+.seg.mini{display:flex;background:var(--fill);border-radius:11px;padding:3px;flex:none;}
+.seg.mini button{min-height:42px;min-width:42px;border-radius:8px;font-size:16px;font-weight:600;color:var(--label2);padding:0 4px;}
+.seg.mini button.sel{background:var(--card);color:var(--tint);box-shadow:0 1px 4px rgba(0,0,0,.12);}
+@media (prefers-color-scheme: dark){.seg.mini button.sel{background:#636366;color:#fff;}}
 /* spese programmate */
 .planrow{display:flex;align-items:center;gap:12px;min-height:44px;padding:11px 0;border-bottom:.5px solid var(--sep);}
 .box .planrow:last-child{border-bottom:none;}
@@ -573,6 +580,7 @@ label{display:block;font-size:13px;color:var(--label2);margin:14px 0 6px;}
 <!-- pulsante Aggiungi (visibile sul Registro) -->
 <button id="fab" class="fab" onclick="openPad()">＋ Aggiungi</button>
 <input type="file" id="scanIn" accept="image/*" capture="environment" hidden onchange="onScan(event)">
+<input type="file" id="scanFile" accept="image/*,application/pdf" hidden onchange="onScan(event)">
 
 <!-- tab bar inset a capsula Liquid Glass -->
 <nav id="tabbar" class="tabbar glass" role="tablist" aria-label="Schermate">
@@ -600,7 +608,8 @@ label{display:block;font-size:13px;color:var(--label2);margin:14px 0 6px;}
   <input id="padNote" placeholder="Nota (facoltativa)" autocomplete="off">
   <div class="keypad" id="keypad"></div>
   <div class="pad-actions">
-    <button class="btn ghost" id="padScan" onclick="document.getElementById('scanIn').click()" aria-label="Scansiona scontrino">📷</button>
+    <button class="btn ghost" id="padScan" onclick="document.getElementById('scanIn').click()" aria-label="Scatta foto scontrino">📷</button>
+    <button class="btn ghost" id="padFile" onclick="document.getElementById('scanFile').click()" aria-label="Carica un file">📎</button>
     <button class="btn" id="padSave" onclick="savePad()">Registra</button>
   </div>
   <button class="btn destructive" id="padDelete" hidden onclick="deletePad()">Elimina movimento</button>
@@ -609,8 +618,10 @@ label{display:block;font-size:13px;color:var(--label2);margin:14px 0 6px;}
 <!-- ===== SETUP ===== -->
 <div id="setup">
   <div class="wm">NUCLE<b>O</b></div>
-  <p>La prossima mossa con i tuoi soldi. Dimmi la verità sul denaro: io ti dico cosa fare, senza giudizio.</p>
-  <div class="section-title">Dati iniziali</div>
+  <p>Riporti entrate e uscite, le vedi, le correggi. Un contabile in tasca, non un amico.</p>
+  <button class="btn ghost" style="margin-bottom:18px" onclick="document.getElementById('setupRestore').click()">Ho già un backup — ripristina</button>
+  <input type="file" id="setupRestore" accept="application/json" hidden onchange="importData(event)">
+  <div class="section-title">Oppure parti da zero</div>
   <label>Stipendio netto mensile (€)</label><input type="number" inputmode="decimal" id="s_stipendio" placeholder="1500">
   <label>Ticket mensili (€)</label><input type="number" inputmode="decimal" id="s_ticket" placeholder="170">
   <label>Giorno di accredito</label><input type="number" inputmode="numeric" id="s_giorno" min="1" max="28" placeholder="10">
@@ -620,10 +631,18 @@ label{display:block;font-size:13px;color:var(--label2);margin:14px 0 6px;}
   </div>
   <div class="row2">
     <div><label>Risparmi (€)</label><input type="number" inputmode="decimal" id="s_risparmi" placeholder="2000"></div>
-    <div><label>Margine sicurezza (€)</label><input type="number" inputmode="decimal" id="s_margine" value="50"></div>
+    <div><label>Margine sicurezza</label>
+      <div class="pctfield">
+        <input type="number" inputmode="decimal" id="s_margine" value="50">
+        <div class="seg mini" id="s_margineMode">
+          <button type="button" data-m="eur" class="sel" onclick="setupMarginMode('eur')">€</button>
+          <button type="button" data-m="pct" onclick="setupMarginMode('pct')">%</button>
+        </div>
+      </div>
+    </div>
   </div>
   <label>Obiettivo risparmio mensile (€)</label><input type="number" inputmode="decimal" id="s_obrisp" placeholder="280">
-  <label>Obiettivo principale</label><input type="text" id="s_obiettivo" placeholder="Smettere di scialacquare e costruire libertà">
+  <label>Obiettivo principale</label><input type="text" id="s_obiettivo" placeholder="Costruire un cuscinetto e smettere di scialacquare">
   <button class="btn" onclick="finishSetup()">Inizia</button>
 </div>
 
@@ -684,7 +703,15 @@ label{display:block;font-size:13px;color:var(--label2);margin:14px 0 6px;}
     <h2>Parametri</h2>
     <div class="box pad">
       <div class="row2"><div><label>Stipendio (€)</label><input type="number" inputmode="decimal" id="i_stipendio"></div><div><label>Ticket (€)</label><input type="number" inputmode="decimal" id="i_ticket"></div></div>
-      <div class="row2"><div><label>Giorno accredito</label><input type="number" inputmode="numeric" id="i_giorno" min="1" max="28"></div><div><label>Margine (€)</label><input type="number" inputmode="decimal" id="i_margine"></div></div>
+      <div class="row2"><div><label>Giorno accredito</label><input type="number" inputmode="numeric" id="i_giorno" min="1" max="28"></div><div><label>Margine sicurezza</label>
+        <div class="pctfield">
+          <input type="number" inputmode="decimal" id="i_margine">
+          <div class="seg mini" id="i_margineMode">
+            <button type="button" data-m="eur" onclick="setMarginMode('eur')">€</button>
+            <button type="button" data-m="pct" onclick="setMarginMode('pct')">%</button>
+          </div>
+        </div>
+      </div></div>
       <div class="row2"><div><label>Saldo conto (€)</label><input type="number" inputmode="decimal" id="i_saldo"></div><div><label>Contanti (€)</label><input type="number" inputmode="decimal" id="i_contanti"></div></div>
       <label>Obiettivo principale (la tua frase)</label><input type="text" id="i_obiettivo">
       <button class="btn small" onclick="saveParams()">Salva parametri</button>
@@ -714,6 +741,17 @@ label{display:block;font-size:13px;color:var(--label2);margin:14px 0 6px;}
 </div>
 
 <div class="toast" id="toast"></div>
+
+<!-- ===== CONSIGLIO ALLOCAZIONE ENTRATA ===== -->
+<div class="sheet-bg" id="allocBg" onclick="closeAlloc()"></div>
+<div class="sheet" id="allocSheet">
+  <div class="grab"></div>
+  <h3>Dove mandare questi soldi?</h3>
+  <div class="footnote" id="allocBody" style="text-align:center;margin-bottom:14px;font-size:14px;line-height:1.5"></div>
+  <select id="allocGoal" style="margin-bottom:12px"></select>
+  <button class="btn" id="allocDo" onclick="doAlloc()">Metti da parte</button>
+  <button class="btn ghost small" onclick="closeAlloc()">Lascio sul conto</button>
+</div>
 
 <!-- ===== RICONCILIAZIONE ===== -->
 <div class="sheet-bg" id="recBg" onclick="closeRecon()"></div>
@@ -862,17 +900,21 @@ function risparmiTot(){return (S.obiettivi||[]).reduce((a,g)=>a+(g.saldo||0),0);
 function obrispTot(){return (S.obiettivi||[]).reduce((a,g)=>a+(g.target||0),0);}
 /* Le fisse NON si sottraggono da sole: sono un promemoria. Contano solo quando le paghi (uscita).
    "impegnato" = ciò che è destinato (fisse da pagare + programmate): mostrato a parte, non nascosto. */
+function marginEur(){
+  const m=S.setup.margine||0;
+  return S.setup.margineMode==="pct" ? (S.setup.stipendio||0)*m/100 : m;
+}
 function calc(){
   const liquidita=S.setup.saldo+S.setup.contanti;        // quanto hai DAVVERO adesso
   const impegnato=fisseImpegno()+programmatoTot();        // già destinato (promemoria)
   const inBudget=(S.setup.impegnoInBudget!==false)?impegnato:0; // l'utente decide se sottrarlo
   const giorni=daysToPay();
   const sett=Math.ceil(giorni/7);
-  const spendibile=liquidita-inBudget-S.setup.margine;    // libero davvero
+  const spendibile=liquidita-inBudget-marginEur();        // libero davvero
   const budget=spendibile/giorni;                          // al giorno
   const settimana=spendibile/Math.max(1,sett);             // a settimana
   let stato="verde";if(budget<5)stato="nero";else if(budget<15)stato="rosso";else if(budget<25)stato="giallo";
-  return{liquidita,impegnato,inBudget,spendibile,giorni,sett,budget,settimana,fineCiclo:spendibile,stato,disp:liquidita};
+  return{liquidita,impegnato,inBudget,spendibile,giorni,sett,budget,settimana,fineCiclo:spendibile,stato,disp:liquidita,margine:marginEur()};
 }
 function snapshot(){
   const c=calc(),k=todayKey();
@@ -1234,9 +1276,59 @@ function savePad(){
     if(padState.type==="spesa"){m.tipo="spesa";m.importo=v;m.categoria=padState.cat;m.metodo=padState.metodo;m.necessaria=ESSENZIALI.includes(padState.cat);m.nota=note;}
     else{m.tipo="entrata";m.importo=v;m.categoria=note||"extra";m.metodo="conto";m.nota="";}
     S.movimenti.push(m);applyMov(m,1);
-    toast(padState.type==="spesa"?"Spesa registrata.":"Entrata registrata.");
+    const wasIncome=padState.type==="entrata";
+    $("padNote").value="";save();render();closePad();
+    toast(wasIncome?"Entrata registrata.":"Spesa registrata.");
+    if(wasIncome)setTimeout(()=>maybeAdviseIncome(v),350);  // consiglio: dove mandare i soldi non ancora spesi
+    return;
   }
   $("padNote").value="";save();render();closePad();
+}
+/* accantona in modo pulito e tracciabile (coerente con applyMov per modifica/eliminazione) */
+function accantonaTo(v,goalId){
+  const g=(S.obiettivi||[]).find(x=>x.id===goalId)||(S.obiettivi||[])[0];
+  if(!g||v<=0)return false;
+  if(v>S.setup.saldo){toast("Non hai abbastanza sul conto: hai "+fmt(S.setup.saldo)+".");return false;}
+  const m={id:"a"+Date.now(),ts:Date.now(),tipo:"accantono",importo:v,categoria:"fondo",metodo:"conto",goalId:g.id,nota:"verso "+g.nome};
+  S.movimenti.push(m);applyMov(m,1);save();render();return true;
+}
+/* ===== CONSIGLIO ALLOCAZIONE (sui soldi non ancora spesi) ===== */
+let allocY=0;
+function it1(x){return x.toFixed(1).replace(".",",");}
+function maybeAdviseIncome(amount){
+  if(amount<100)return false;                       // sotto i 100€ non disturbo
+  const mens=spesaMensileMedia(), risp=risparmiTot(), fisseRes=fisseImpegno();
+  const goals=S.obiettivi||[];
+  let mesi=mens>0?risp/mens:null, Y;
+  if(mesi!==null&&mesi<3){const need=Math.max(0,3*mens-risp);Y=Math.round(Math.min(need,amount*0.4)/10)*10;}
+  else Y=Math.round(amount*0.15/10)*10;
+  if(Y<10)Y=Math.round(amount*0.1/10)*10;
+  if(Y<10)return false;
+  Y=Math.min(Y,Math.floor(S.setup.saldo));          // mai più di quanto c'è sul conto
+  if(Y<10)return false;
+  allocY=Y;
+  const lines=[`Hai incassato <b>${fmt(amount)}</b>. La scelta che conta è dove vanno, prima che si confondano con lo spendibile.`];
+  if(fisseRes>0)lines.push(`Da pagare questo ciclo: <b>${fmt(fisseRes)}</b> — tienili pronti.`);
+  if(mesi!==null){
+    const newMesi=(risp+Y)/mens;
+    lines.push(mesi<3
+      ? `Cuscinetto: <b>${it1(mesi)} mesi</b>. Con ${fmt(Y)} sali verso <b>${it1(newMesi)}</b> (soglia sicura: 3).`
+      : `Cuscinetto solido (<b>${it1(mesi)} mesi</b>). Una quota verso un obiettivo fa crescere il resto.`);
+  }
+  $("allocBody").innerHTML=lines.join("<br>");
+  const gsel=$("allocGoal");
+  if(goals.length){gsel.hidden=false;gsel.innerHTML=goals.map(g=>`<option value="${g.id}">${esc(g.emoji||"🔒")} ${esc(g.nome)}${g.target?` (${fmt(g.saldo||0)}/${fmt(g.target)})`:""}</option>`).join("");$("allocDo").textContent=`Metti ${fmt(Y)} da parte`;}
+  else{gsel.hidden=true;$("allocDo").textContent=`Crea un cuscinetto con ${fmt(Y)}`;}
+  $("allocBg").classList.add("open");$("allocSheet").classList.add("open");
+  return true;
+}
+function closeAlloc(){$("allocBg").classList.remove("open");$("allocSheet").classList.remove("open");}
+function doAlloc(){
+  const goals=S.obiettivi||[];
+  if(!goals.length){closeAlloc();openNewGoal(allocY);return;}
+  const gid=$("allocGoal").value;
+  if(accantonaTo(allocY,gid))toast(fmt(allocY)+" messi da parte.");
+  closeAlloc();
 }
 function deletePad(){
   const m=S.movimenti.find(x=>x.id===padState.editId);
@@ -1247,21 +1339,26 @@ function deletePad(){
 function onScan(ev){
   const f=ev.target.files[0];ev.target.value="";if(!f)return;
   if(!padState||!$("padSheet").classList.contains("open"))openPad();
-  if(!S.ai.key){toast("Scrivi tu l'importo: lo scanner automatico richiede l'IA (⚙︎).");return;}
-  toast("Leggo lo scontrino…");
+  const isPdf=f.type==="application/pdf"||/\.pdf$/i.test(f.name||"");
+  if(!S.ai.key){toast("Allegato caricato. Per leggere il totale in automatico serve l'IA (⚙︎); intanto scrivi tu l'importo.");return;}
+  toast(isPdf?"Leggo il PDF…":"Leggo lo scontrino…");
   const r=new FileReader();
   r.onload=async()=>{
     try{
+      const b64=r.result.split(",")[1];
+      const block=isPdf
+        ? {type:"document",source:{type:"base64",media_type:"application/pdf",data:b64}}
+        : {type:"image",source:{type:"base64",media_type:f.type||"image/jpeg",data:b64}};
       const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",
         headers:{"Content-Type":"application/json","x-api-key":S.ai.key,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
-        body:JSON.stringify({model:S.ai.model,max_tokens:80,system:"Leggi lo scontrino. Rispondi SOLO col totale pagato come numero puro (usa il punto per i decimali). Nessun testo, nessun simbolo.",messages:[{role:"user",content:[{type:"image",source:{type:"base64",media_type:f.type,data:r.result.split(",")[1]}},{type:"text",text:"Totale?"}]}]})
+        body:JSON.stringify({model:S.ai.model,max_tokens:80,system:"Leggi lo scontrino o la ricevuta. Rispondi SOLO col totale pagato come numero puro (punto per i decimali). Nessun testo, nessun simbolo.",messages:[{role:"user",content:[block,{type:"text",text:"Totale?"}]}]})
       });
       const data=await res.json();
       const t=(data.content||[]).map(b=>b.text||"").join("").trim();
       const n=parseFloat(t.replace(",","."));
       if(n>0){padState.amount=String(n).replace(".",",");syncPad();toast("Totale "+fmt(n)+": controlla e registra.");}
       else toast("Non ho letto il totale. Scrivilo tu.");
-    }catch(e){toast("Scanner non disponibile ora. Scrivi l'importo.");}
+    }catch(e){toast("Lettura non riuscita. Scrivi l'importo.");}
   };
   r.readAsDataURL(f);
 }
@@ -1605,6 +1702,10 @@ function reconNudge(){
   }
 }
 function nudgeAction(){if(nudgeKind==="backup")exportData();else openRecon();}
+/* interruttore €/% del margine */
+let setupMargin="eur";
+function setupMarginMode(m){setupMargin=m;document.querySelectorAll("#s_margineMode button").forEach(b=>b.classList.toggle("sel",b.dataset.m===m));$("s_margine").value=(m==="pct"?10:50);}
+function setMarginMode(m){document.querySelectorAll("#i_margineMode button").forEach(b=>b.classList.toggle("sel",b.dataset.m===m));}
 
 /* ================= IMPORT ESTRATTI (banca / Satispay) ================= */
 function onStatement(ev){
@@ -1828,6 +1929,7 @@ function renderSettings(){
   }).join(""):`<div class="empty">Aggiungi casa, benzina, telefono, abbonamenti, rate…</div>`;
   const s=S.setup;
   $("i_stipendio").value=s.stipendio;$("i_ticket").value=s.ticket;$("i_giorno").value=s.giorno;$("i_margine").value=s.margine;
+  document.querySelectorAll("#i_margineMode button").forEach(b=>b.classList.toggle("sel",b.dataset.m===(s.margineMode||"eur")));
   $("i_saldo").value=s.saldo;$("i_contanti").value=s.contanti;$("i_obiettivo").value=s.obiettivo||"";
   $("i_impbudget").checked=(s.impegnoInBudget!==false);
 }
@@ -1881,7 +1983,7 @@ function saveQuickEdit(){
 }
 
 function saveParams(){
-  Object.assign(S.setup,{stipendio:num("i_stipendio"),ticket:num("i_ticket"),giorno:Math.min(28,Math.max(1,num("i_giorno")||1)),margine:num("i_margine"),saldo:num("i_saldo"),contanti:num("i_contanti"),obiettivo:$("i_obiettivo").value.trim()});
+  Object.assign(S.setup,{stipendio:num("i_stipendio"),ticket:num("i_ticket"),giorno:Math.min(28,Math.max(1,num("i_giorno")||1)),margine:num("i_margine"),margineMode:(document.querySelector("#i_margineMode button.sel")||{}).dataset?document.querySelector("#i_margineMode button.sel").dataset.m:"eur",saldo:num("i_saldo"),contanti:num("i_contanti"),obiettivo:$("i_obiettivo").value.trim()});
   save();render();toast("Parametri salvati.");
 }
 function toggleImpBudget(){S.setup.impegnoInBudget=$("i_impbudget").checked;save();render();toast(S.setup.impegnoInBudget?"Impegni sottratti dal budget":"Impegni solo come promemoria");}
@@ -1909,7 +2011,7 @@ function resetAll(){if(confirm("Azzerare tutti i dati di Nucleo?")){localStorage
 function finishSetup(){
   if(num("s_stipendio")<=0){toast("Inserisci almeno lo stipendio.");return;}
   S=blank();
-  S.setup={stipendio:num("s_stipendio"),ticket:num("s_ticket"),giorno:Math.min(28,Math.max(1,num("s_giorno")||1)),saldo:num("s_saldo"),contanti:num("s_contanti"),margine:num("s_margine")||50,obiettivo:$("s_obiettivo").value.trim()};
+  S.setup={stipendio:num("s_stipendio"),ticket:num("s_ticket"),giorno:Math.min(28,Math.max(1,num("s_giorno")||1)),saldo:num("s_saldo"),contanti:num("s_contanti"),margine:num("s_margine")||(setupMargin==="pct"?10:50),margineMode:setupMargin,obiettivo:$("s_obiettivo").value.trim()};
   S.obiettivi=[{id:"g_libero",nome:"Fondo libero",emoji:"🐖",saldo:num("s_risparmi"),target:num("s_obrisp")}];
   save();render();goPanel(1);
   toast("Pronto. Tocca «＋ Aggiungi» per registrare entrate e uscite.");
