@@ -1,4 +1,4 @@
-const CACHE = "nucleo-v9";
+const CACHE = "nucleo-v13";
 const ASSETS = ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png", "./apple-touch-icon.png"];
 
 self.addEventListener("install", e => {
